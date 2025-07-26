@@ -1,102 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>年号当てクイズ</title>
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; }
-    button { font-size: 20px; padding: 10px 20px; margin-top: 20px; }
+    body { font-family: sans-serif; text-align: center; padding: 30px; }
+    button, input { font-size: 18px; margin: 10px; }
   </style>
 </head>
 <body>
+  <h1>年号当てクイズ</h1>
 
-<h1>年号当てクイズ</h1>
-<div id="quiz"></div>
-<div id="answer" style="margin-top:20px; font-size:18px;"></div>
-<button id="btn">答えを見る</button>
+  <label>開始年：<input type="number" id="startYear" value="1800"></label>
+  <label>終了年：<input type="number" id="endYear" value="2025"></label>
+  <button onclick="generateQuestion()">出題する</button>
 
-<script>
-const quizList = [
-  {year:'-334', event:'アレクサンドロス大王が東方遠征'},
-{year:'-221', event:'秦の始皇帝が中国を統一'},
-{year:'-202', event:'漢が中国統一'},
-{year:'-27', event:'ローマ帝国成立'},
-{year:'-4', event:'イエスキリスト誕生'},
-{year:'57', event:'倭の奴国の王が漢に使いを送る'},
-{year:'239', event:'邪馬台国の卑弥呼が魏に使いを送る'},
-{year:'313', event:'ロ｜マ帝国キリスト教公認'},
-{year:'395', event:'ロ｜マ帝国東西裂'},
-{year:'476', event:'西ロ｜マ滅ぶ'},
-{year:'478', event:'倭王武が中国の南朝に使いを送る'},
-{year:'589', event:'隋が中国統一'},
-{year:'593', event:'聖徳太子が政務に参加'},
-{year:'607', event:'小野妹子を隋に送る'},
-{year:'610', event:'ムハンマドイスラム教を開く'},
-{year:'618', event:'唐が建国'},
-{year:'630', event:'第一回遣唐使'},
-{year:'645', event:'大化の改新'},
-{year:'663', event:'白村江の戦い'},
-{year:'672', event:'壬申の乱'},
-{year:'676', event:'新羅が朝鮮統一'},
-{year:'694', event:'都を藤原京に移す'},
-{year:'701', event:'大宝律令'},
-{year:'710', event:'都を奈良に移す'},
-{year:'723', event:'三世一身法'},
-{year:'743', event:'墾田永年私財法'},
-{year:'794', event:'都を平安京に移す'},
-{year:'802', event:'坂上田村麻呂が丹沢城を築く'},
-{year:'866', event:'藤原良房が摂政に'},
-{year:'884', event:'藤原基経が関白に'},
-{year:'894', event:'遣唐使の延期'},
-{year:'907', event:'唐が滅びる'},
-{year:'936', event:'高麗が朝鮮統一'},
-{year:'939', event:'平将門の乱'},
-{year:'', event:'藤原純友の乱'},
-{year:'960', event:'宋が起こる'},
-{year:'1016', event:'藤原道長が摂政になる'},
-{year:'1051', event:'前九年合戦'},
-{year:'1069', event:'後三条天皇が荘園の整理を行う'},
-{year:'1083', event:'後三年合戦'},
-{year:'1086', event:'白河上皇の院政が始まる'},
-{year:'1096', event:'寿時軍の派遣が始まる'},
-{year:'1156', event:'保元の乱'},
-{year:'1159', event:'平治の乱'},
-{year:'1167', event:'平清盛が太政大臣になる'},
-{year:'1185', event:'平氏滅ぶ'},
-{year:'', event:'源頼朝が守護・地頭の設置を認められる'},
-{year:'1192', event:'源頼朝が征夷大将軍になる'},
-{year:'1206', event:'チンギス・ハンがモンゴル統一'},
-{year:'1215', event:'マグナ・カルタ'}
-];
+  <h2 id="question"></h2>
+  <div id="answerButtons"></div>
+  <button id="revealBtn" onclick="showAnswer()" style="display:none">答えを見る</button>
+  <div id="answer" style="margin-top:20px; font-size: 24px;"></div>
 
-let currentQuiz = {};
-let isShowingAnswer = false;
+  <script>
+    const events = [
+      { year: 1868, event: "明治維新" },
+      { year: 1945, event: "第二次世界大戦終戦" },
+      { year: 1923, event: "関東大震災" },
+      { year: 1989, event: "平成時代開始" },
+      { year: 2011, event: "東日本大震災" },
+      { year: 1600, event: "関ヶ原の戦い" },
+      { year: 1192, event: "鎌倉幕府成立" },
+      { year: 710, event: "平城京遷都" },
+      { year: 1543, event: "鉄砲伝来" },
+      { year: 1575, event: "長篠の戦い" },
+      { year: 1867, event: "大政奉還" },
+      { year: 1941, event: "真珠湾攻撃" },
+      { year: 1964, event: "東京オリンピック" },
+      { year: 1603, event: "江戸幕府成立" },
+      { year: 1871, event: "廃藩置県" },
+      { year: 1889, event: "大日本帝国憲法発布" }
+    ];
 
-function pickRandomQuiz() {
-  const filtered = quizList; // 出題範囲絞るならここを調整
-  return filtered[Math.floor(Math.random() * filtered.length)];
-}
+    let currentAnswer = null;
 
-function showNewQuiz() {
-  currentQuiz = pickRandomQuiz();
-  document.getElementById("quiz").innerText = `この出来事が起きた年号は？\n「${currentQuiz.event}」`;
-  document.getElementById("answer").innerText = "";
-  document.getElementById("btn").innerText = "答えを見る";
-  isShowingAnswer = false;
-}
+    function generateQuestion() {
+      document.getElementById("answer").textContent = "";
+      document.getElementById("revealBtn").style.display = "none";
+      document.getElementById("revealBtn").textContent = "答えを見る";
 
-document.getElementById("btn").addEventListener("click", function() {
-  if (!isShowingAnswer) {
-    document.getElementById("answer").innerText = `→ 答え：${currentQuiz.year}`;
-    this.innerText = "次の問題へ";
-    isShowingAnswer = true;
-  } else {
-    showNewQuiz();
-  }
-});
+      const start = parseInt(document.getElementById("startYear").value, 10);
+      const end = parseInt(document.getElementById("endYear").value, 10);
 
-showNewQuiz();
-</script>
+      const filteredEvents = events.filter(e => e.year >= start && e.year <= end);
+      if (filteredEvents.length < 4) {
+        document.getElementById("question").textContent = "この範囲では選択肢が足りません。";
+        document.getElementById("answerButtons").innerHTML = "";
+        return;
+      }
 
+      const choices = [];
+      while (choices.length < 4) {
+        const pick = filteredEvents[Math.floor(Math.random() * filteredEvents.length)];
+        if (!choices.includes(pick)) choices.push(pick);
+      }
+
+      const question = choices[Math.floor(Math.random() * choices.length)];
+      currentAnswer = question;
+
+      document.getElementById("question").textContent = `「${question.event}」が起きた年は？`;
+      const shuffled = choices.map(c => c.year).sort(() => Math.random() - 0.5);
+
+      document.getElementById("answerButtons").innerHTML = shuffled.map(year =>
+        `<button onclick="selectAnswer(${year})">${year}</button>`
+      ).join("");
+
+      document.getElementById("revealBtn").style.display = "inline-block";
+    }
+
+    function selectAnswer(year) {
+      const answer = document.getElementById("answer");
+      if (year === currentAnswer.year) {
+        answer.textContent = "正解！";
+        answer.style.color = "green";
+      } else {
+        answer.textContent = `不正解！正解は ${currentAnswer.year} 年`;
+        answer.style.color = "red";
+      }
+      document.getElementById("revealBtn").textContent = "次の問題へ";
+    }
+
+    function showAnswer() {
+      if (document.getElementById("revealBtn").textContent === "次の問題へ") {
+        generateQuestion();
+      } else {
+        document.getElementById("answer").textContent = `正解は ${currentAnswer.year} 年`;
+        document.getElementById("answer").style.color = "black";
+        document.getElementById("revealBtn").textContent = "次の問題へ";
+      }
+    }
+  </script>
 </body>
 </html>
