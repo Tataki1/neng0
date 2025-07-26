@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>年号当てクイズ</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 50px; }
+    button { font-size: 20px; padding: 10px 20px; margin-top: 20px; }
+  </style>
+</head>
+<body>
+
+<h1>年号当てクイズ</h1>
+<div id="quiz"></div>
+<div id="answer" style="margin-top:20px; font-size:18px;"></div>
+<button id="btn">答えを見る</button>
+
+<script>
+const quizList = [
+  { year: "1868年", event: "明治維新" },
+  { year: "1945年", event: "第二次世界大戦終結" },
+  { year: "1923年", event: "関東大震災" },
+  { year: "1600年", event: "関ヶ原の戦い" },
+  { year: "1192年", event: "鎌倉幕府成立" },
+  { year: "710年", event: "平城京遷都" },
+  { year: "794年", event: "平安京遷都" },
+  { year: "1867年", event: "大政奉還" },
+  { year: "1941年", event: "太平洋戦争開戦" },
+  { year: "645年", event: "大化の改新" }
+];
+
+let currentQuiz = {};
+let isShowingAnswer = false;
+
+function pickRandomQuiz() {
+  const filtered = quizList; // 出題範囲絞るならここを調整
+  return filtered[Math.floor(Math.random() * filtered.length)];
+}
+
+function showNewQuiz() {
+  currentQuiz = pickRandomQuiz();
+  document.getElementById("quiz").innerText = `この出来事が起きた年号は？\n「${currentQuiz.event}」`;
+  document.getElementById("answer").innerText = "";
+  document.getElementById("btn").innerText = "答えを見る";
+  isShowingAnswer = false;
+}
+
+document.getElementById("btn").addEventListener("click", function() {
+  if (!isShowingAnswer) {
+    document.getElementById("answer").innerText = `→ 答え：${currentQuiz.year}`;
+    this.innerText = "次の問題へ";
+    isShowingAnswer = true;
+  } else {
+    showNewQuiz();
+  }
+});
+
+showNewQuiz();
+</script>
+
+</body>
+</html>
